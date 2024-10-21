@@ -1,0 +1,19 @@
+.container {
+  background-color: #bcd6fd;
+  padding: 2rem;
+  border-radius: 0.25rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.gantt {
+  width: 100%;
+  filter: blur(0.25rem);
+}
+
+.get-started__btn {
+  width: 40%;
+  margin: 1rem;
+}
