@@ -1,6 +1,6 @@
 .hamburger {
   display: flex;
-  height: 26px;
+  height: 20px;
   margin-right: 27px;
 
   .main-nav-toggle {
@@ -18,7 +18,7 @@
       position: absolute;
       top: 0;
       height: 0;
-      border-bottom: 4px solid #bbb;
+      border-bottom: 2px solid #bbb;
       width: 100%;
       left: 0;
       right: 0;
@@ -34,7 +34,7 @@
       text-indent: 100%;
       overflow: hidden;
       white-space: nowrap;
-      height: 4px;
+      height: 2px;
       background-color: #bbb;
       width: 100%;
       position: absolute;

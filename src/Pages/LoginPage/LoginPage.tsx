@@ -13,7 +13,7 @@ function LoginPage() {
         <button>Google</button>
       </div>
       <div>
-        <p>Don't have an account yet?</p> <Link to="/">Sign up</Link>
+        <p>Don't have an account yet?</p> <Link to="/signup">Sign up</Link>
       </div>
     </div>
   );
