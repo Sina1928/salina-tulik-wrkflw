@@ -1,0 +1,93 @@
+.login {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  &__header {
+    display: flex;
+    width: 100%;
+    padding: 0 1rem;
+
+    background-color: #163c49;
+  }
+  &__ctnr {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    margin-top: 1rem;
+    padding: 1rem;
+    border-radius: 0.25rem;
+  }
+
+  &__title {
+    margin-bottom: 2rem;
+  }
+
+  &__form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+    padding: 3rem 7rem 1rem 7rem;
+    border-radius: 0.25rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+
+  &__group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  &__label {
+    font-weight: 500;
+  }
+
+  &__btn {
+    background-color: #ffd700;
+    color: #163c49;
+    font-weight: 600;
+    margin: 1rem;
+    padding: 0.5rem;
+    width: 11rem;
+  }
+
+  &__email {
+    border: 0.1rem solid #163c49;
+    border-radius: 0.25rem;
+    padding: 0.5rem;
+  }
+  &__password {
+    border: 0.1rem solid #163c49;
+    border-radius: 0.25rem;
+    padding: 0.5rem;
+  }
+
+  &-google {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  &-google__btn {
+    background-color: darkcyan;
+    color: #fff;
+    font-weight: 600;
+    margin: 1rem;
+    padding: 0.5rem;
+    width: 11rem;
+  }
+}
+
+.signup-prompt {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 0 2rem;
+}
+
+.signup-link {
+  color: darkcyan;
+  font-weight: 700;
+}

@@ -22,45 +22,63 @@ const LoginContent: React.FC = () => {
 
   return (
     <div className="login">
-      <Logo />
-      <div className="login-ctnr">
-        <h1>Log in to your account</h1>
-        <form className="login-form" onSubmit={handleSubmit}>
+      <div className="login__header">
+        <Logo />
+      </div>
+      <div className="login__ctnr">
+        <h1 className="login__title">Log in to your account</h1>
+        <form className="login__form" onSubmit={handleSubmit}>
           {error && (
-            <div className="error-message">
+            <div className="error__message">
               {error} <button onClick={clearError}>✕</button>
             </div>
           )}
+          <div className="login__group">
+            <label className="login__label" htmlFor="email">
+              Email:
+            </label>{" "}
+            <input
+              type="email"
+              className="login__email"
+              placeholder="Example@company.com"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              disabled={loading}
+              required
+            />
+          </div>
 
-          <label htmlFor="email">Email:</label>
-          <input
-            type="email"
-            className="email__input"
-            placeholder="Example@company.com"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            disabled={loading}
-            required
-          />
-          <label htmlFor="password">Password:</label>
-          <input
-            type="password"
-            placeholder="Yourpassword"
-            className="password__input"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            disabled={loading}
-            required
-          />
-          <button type="submit" disabled={loading} className="submit__btn">
-            {loading ? "Logging in..." : "Login"}
-          </button>
+          <div className="login__group">
+            <label className="login__label" htmlFor="password">
+              Password:
+            </label>{" "}
+            <input
+              type="password"
+              placeholder="Yourpassword"
+              className="login__password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              disabled={loading}
+              required
+            />
+          </div>
+          <div className="login-group">
+            <button type="submit" disabled={loading} className="login__btn">
+              {loading ? "Logging in..." : "Login"}
+            </button>
+          </div>
+          <div className="login-google">
+            <p>Or Sign in with</p>
+            <button className="login-google__btn">Google</button>
+          </div>
+
+          <div className="signup-prompt">
+            <p>Don't have an account yet?</p>{" "}
+            <Link to="/signup" className="signup-link">
+              Sign up
+            </Link>
+          </div>
         </form>
-        <p>Or Sign in with</p>
-        <button>Google</button>
-      </div>
-      <div className="signup-prompt">
-        <p>Don't have an account yet?</p> <Link to="/signup">Sign up</Link>
       </div>
     </div>
   );

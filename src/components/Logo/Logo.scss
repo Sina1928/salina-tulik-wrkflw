@@ -1,11 +1,15 @@
-.logo {
+@use "./styles/reset" as *;
+
+.logo__img {
+  width: 4.5rem;
+  height: 4.5rem;
+}
+
+.logo__name {
   display: flex;
+  max-width: 9.375rem;
   color: #fff;
-  font-size: 2.5rem;
+  font-size: 3rem;
   font-weight: 600;
   align-items: center;
-  &__img {
-    width: 4.5rem;
-    height: 4.5rem;
-  }
 }

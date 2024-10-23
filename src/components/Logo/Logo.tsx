@@ -3,16 +3,16 @@ import { Link } from "react-router-dom";
 
 function Logo() {
   return (
-    <div className="logo">
-      <Link to="/">
+    <Link to="/">
+      <div className="logo">
         <img
           className="logo__img"
           src={logo}
           alt="Workflow's Logo, W in cyan/darkturquoise"
-        />{" "}
-        wrkflw
-      </Link>
-    </div>
+        />
+        <p className="logo__name">wrkflw</p>
+      </div>
+    </Link>
   );
 }
 
