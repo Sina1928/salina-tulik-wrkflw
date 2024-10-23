@@ -63,79 +63,87 @@ const SignupPage: React.FC = () => {
   };
 
   return (
-    <div>
-      <Logo />
-      <div>
-        <h1>Welcome to Wrkflw</h1>
-        <h2>Get started- it's free. No credit card needed.</h2>
-      </div>
-      <div>
-        <button>Continue with Google</button> <p>Or</p>{" "}
+    <div className="signup-ctnr">
+      <div className="signup-left">
+        <Logo />
+
         <div>
-          <form onSubmit={handleSubmit}>
-            <div>
-              {/* <select name="industry_id" onChange={handleChange}>
+          <h1>Welcome to Wrkflw</h1>
+          <h2>Get started- it's free. No credit card needed.</h2>
+        </div>
+        <div>
+          <button>Continue with Google</button> <p>Or</p>{" "}
+          <div>
+            <form onSubmit={handleSubmit}>
+              <div>
+                {/* <select name="industry_id" onChange={handleChange}>
                 {industries.map((industry) => (
                   <option key={industry.id} value={industry.id}>
                     {industry.name}
                   </option>
                 ))}
               </select> */}
-              <label>Email:</label>{" "}
-              <input
-                type="email"
-                id="user[email]"
-                name="email"
-                value={formData.email}
-                onChange={handleChange}
-                required
-                placeholder="name@company.com"
-                className={`input ${
-                  errors.email ? "input--invalid" : "input--valid"
-                }`}
-              />
-              {errors.email && <p className="error-message">{errors.email}</p>}
-              <div>
-                <label>Password:</label>{" "}
+                <label>Email:</label>{" "}
                 <input
-                  type="password"
-                  name="password"
-                  placeholder="yourpassword"
-                  value={formData.password}
-                  required
+                  type="email"
+                  id="user[email]"
+                  name="email"
+                  value={formData.email}
                   onChange={handleChange}
+                  required
+                  placeholder="name@company.com"
                   className={`input ${
-                    errors.password ? "input--invalid" : "input--valid"
+                    errors.email ? "input--invalid" : "input--valid"
                   }`}
                 />
-                {errors.password && (
-                  <p className="error-message">{errors.password}</p>
+                {errors.email && (
+                  <p className="error-message">{errors.email}</p>
                 )}
+                <div>
+                  <label>Password:</label>{" "}
+                  <input
+                    type="password"
+                    name="password"
+                    placeholder="yourpassword"
+                    value={formData.password}
+                    required
+                    onChange={handleChange}
+                    className={`input ${
+                      errors.password ? "input--invalid" : "input--valid"
+                    }`}
+                  />
+                  {errors.password && (
+                    <p className="error-message">{errors.password}</p>
+                  )}
+                </div>
+                <div>
+                  <label>Confirm Password:</label>{" "}
+                  <input
+                    type="password"
+                    name="confirmPassword"
+                    placeholder="yourpassword"
+                    value={formData.confirmPassword}
+                    required
+                    onChange={handleChange}
+                    className={`input ${
+                      errors.confirmPassword ? "input--invalid" : "input--valid"
+                    }`}
+                  />
+                  {errors.confirmPassword && (
+                    <p className="error-message">{errors.confirmPassword}</p>
+                  )}
+                </div>
+                <button type="submit">Sign Up</button>
               </div>
-              <div>
-                <label>Confirm Password:</label>{" "}
-                <input
-                  type="password"
-                  name="confirmPassword"
-                  placeholder="yourpassword"
-                  value={formData.confirmPassword}
-                  required
-                  onChange={handleChange}
-                  className={`input ${
-                    errors.confirmPassword ? "input--invalid" : "input--valid"
-                  }`}
-                />
-                {errors.confirmPassword && (
-                  <p className="error-message">{errors.confirmPassword}</p>
-                )}
-              </div>
-              <button type="submit">Sign Up</button>
+            </form>
+            <div>
+              <p>Already have an account?</p> <Link to="/login">Login</Link>
             </div>
-          </form>
-          <div>
-            <p>Already have an account?</p> <Link to="/login">Login</Link>
           </div>
         </div>
+      </div>
+      <div className="signup-right">
+        <Logo />
       </div>
     </div>
   );
