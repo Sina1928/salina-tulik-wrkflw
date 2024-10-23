@@ -2,6 +2,7 @@ import { Link, useNavigate } from "react-router-dom";
 import Logo from "@/components/Logo/Logo";
 import { useState } from "react";
 import { useLogin } from "@/contexts/LoginContext";
+import "./LoginPage.scss";
 
 interface LoginFormProps {
   onSuccess?: () => void;
