@@ -1,6 +1,7 @@
 import axios from "axios";
 import { useState } from "react";
 import { Link } from "react-router-dom";
+import Logo from "@/components/Logo/Logo";
 
 const SignupPage: React.FC = () => {
   interface FormData {
@@ -55,6 +56,7 @@ const SignupPage: React.FC = () => {
     try {
       const response = await axios.post("/signup", formData);
       console.log(response.data);
+      localStorage.setItem("token", response.data.token);
     } catch (err) {
       console.error("Signup error: ", err);
     }
@@ -62,6 +64,7 @@ const SignupPage: React.FC = () => {
 
   return (
     <div>
+      <Logo />
       <div>
         <h1>Welcome to Wrkflw</h1>
         <h2>Get started- it's free. No credit card needed.</h2>
@@ -71,6 +74,13 @@ const SignupPage: React.FC = () => {
         <div>
           <form onSubmit={handleSubmit}>
             <div>
+              {/* <select name="industry_id" onChange={handleChange}>
+                {industries.map((industry) => (
+                  <option key={industry.id} value={industry.id}>
+                    {industry.name}
+                  </option>
+                ))}
+              </select> */}
               <label>Email:</label>{" "}
               <input
                 type="email"
@@ -78,6 +88,7 @@ const SignupPage: React.FC = () => {
                 name="email"
                 value={formData.email}
                 onChange={handleChange}
+                required
                 placeholder="name@company.com"
                 className={`input ${
                   errors.email ? "input--invalid" : "input--valid"
@@ -91,6 +102,7 @@ const SignupPage: React.FC = () => {
                   name="password"
                   placeholder="yourpassword"
                   value={formData.password}
+                  required
                   onChange={handleChange}
                   className={`input ${
                     errors.password ? "input--invalid" : "input--valid"
@@ -107,6 +119,7 @@ const SignupPage: React.FC = () => {
                   name="confirmPassword"
                   placeholder="yourpassword"
                   value={formData.confirmPassword}
+                  required
                   onChange={handleChange}
                   className={`input ${
                     errors.confirmPassword ? "input--invalid" : "input--valid"
