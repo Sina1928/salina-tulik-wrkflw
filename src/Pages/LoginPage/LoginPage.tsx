@@ -1,14 +1,10 @@
 import { Link, useNavigate } from "react-router-dom";
 import Logo from "@/components/Logo/Logo";
 import { useState } from "react";
-import { useLogin } from "@/contexts/LoginContext";
+import { LoginProvider, useLogin } from "@/contexts/LoginContext";
 import "./LoginPage.scss";
 
-interface LoginFormProps {
-  onSuccess?: () => void;
-}
-
-export const LoginPage: React.FC<LoginFormProps> = ({ onSuccess }) => {
+const LoginContent: React.FC = () => {
   const { login, error, loading, clearError } = useLogin();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -18,7 +14,6 @@ export const LoginPage: React.FC<LoginFormProps> = ({ onSuccess }) => {
     e.preventDefault();
     try {
       await login(email, password);
-      onSuccess?.();
       navigate("/dashboard");
     } catch (err: any) {
       console.error("Login error", err);
@@ -26,17 +21,17 @@ export const LoginPage: React.FC<LoginFormProps> = ({ onSuccess }) => {
   };
 
   return (
-    <div>
+    <div className="login">
       <Logo />
-      <div>
+      <div className="login-ctnr">
         <h1>Log in to your account</h1>
-
-        <form onSubmit={handleSubmit}>
+        <form className="login-form" onSubmit={handleSubmit}>
           {error && (
-            <div>
+            <div className="error-message">
               {error} <button onClick={clearError}>✕</button>
             </div>
           )}
+
           <label htmlFor="email">Email:</label>
           <input
             type="email"
@@ -61,14 +56,21 @@ export const LoginPage: React.FC<LoginFormProps> = ({ onSuccess }) => {
             {loading ? "Logging in..." : "Login"}
           </button>
         </form>
-
         <p>Or Sign in with</p>
         <button>Google</button>
       </div>
-      <div>
+      <div className="signup-prompt">
         <p>Don't have an account yet?</p> <Link to="/signup">Sign up</Link>
       </div>
     </div>
+  );
+};
+
+export const LoginPage: React.FC = () => {
+  return (
+    <LoginProvider>
+      <LoginContent />
+    </LoginProvider>
   );
 };
 
