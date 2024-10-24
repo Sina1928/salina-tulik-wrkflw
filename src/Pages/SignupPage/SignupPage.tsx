@@ -2,7 +2,8 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import Logo from "@/components/Logo/Logo";
-import { SignupProvider, useSignup } from "@/contexts/SignupContext";
+import { SignupProvider } from "@/contexts/SignupContext";
+import "./SignupPage.scss";
 
 interface Industry {
   id: number;
@@ -17,17 +18,17 @@ interface Component {
 }
 
 interface FormData {
-  firstName: string;
+  firstName: string; // User Info
   lastName: string;
   email: string;
   password: string;
   confirmPassword: string;
-  companyName: string;
+  companyName: string; // Company Info
   logoUrl: string;
   themeColor: string;
   websiteUrl: string;
-  industryId: string;
-  selectedComponents: number[];
+  industryId: string | null;
+  selectedComponents: number[]; // Component Info
 }
 
 const SignupContent: React.FC = () => {
@@ -43,18 +44,24 @@ const SignupContent: React.FC = () => {
     logoUrl: "",
     themeColor: "",
     websiteUrl: "",
-    industryId: "",
+    industryId: null,
     selectedComponents: [],
   });
 
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
   const [industries, setIndustries] = useState<Industry[]>([]);
   const [components, setComponents] = useState<Component[]>([]);
+  const [currentStep, setCurrentStep] = useState(1);
+  const [loading, setLoading] = useState(false);
+
+  // fetch industries (on mount)
 
   useEffect(() => {
     const fetchIndustries = async () => {
       try {
-        const response = await axios.get("http://localhost:8080/industries");
+        const response = await axios.get(
+          "http://localhost:8080/api/industries"
+        );
         setIndustries(response.data);
       } catch (err) {
         console.error("Error fetching industries", err);
@@ -63,11 +70,14 @@ const SignupContent: React.FC = () => {
     fetchIndustries();
   }, []);
 
+  // If industryId available, fetch components
   useEffect(() => {
+    if (!formData.industryId) return;
+
     const fetchComponents = async () => {
       try {
         const response = await axios.get(
-          `http://localhost:8080/industries/${formData.industryId}components`
+          `http://localhost:8080/api/industries/${formData.industryId}/components`
         );
         setComponents(response.data);
       } catch (err) {
@@ -77,6 +87,7 @@ const SignupContent: React.FC = () => {
     fetchComponents();
   }, [formData.industryId]);
 
+  // Form Validation
   const validateFormStepOne = () => {
     const newErrors: { [key: string]: string } = {};
 
@@ -119,102 +130,171 @@ const SignupContent: React.FC = () => {
       newErrors.industryId = "Industry selection is required.";
     }
 
-    if (!formData.websiteUrl) {
-      newErrors.websiteUrl = "Please enter a valid URL";
+    if (formData.websiteUrl) {
+      try {
+        new URL(formData.websiteUrl);
+      } catch {
+        newErrors.websiteUrl =
+          "Please enter a valid URL (e.g., https://example.com";
+      }
     }
 
     return newErrors;
   };
 
-
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
     const { name, value } = e.target;
-    setFormData({ ...formData, [name]: value });
+    setFormData((prev) => ({ ...prev, [name]: value }));
+
+    if (errors[name]) {
+      setErrors((prev) => ({ ...prev, [name]: "" }));
+    }
+  };
+
+  const handleComponentSelection = (componentId: number) => {
+    setFormData((prev) => ({
+      ...prev,
+      selectedComponents: prev.selectedComponents.includes(componentId)
+        ? prev.selectedComponents.filter((id) => id !== componentId)
+        : [...prev.selectedComponents, componentId],
+    }));
   };
 
   const handleClickNext = () => {
- if currentStep ===1 {
-  errors = validateFormStepOne
- } else if currentStep ===2 {
-  errors= validateFormStepTwo
- }
- if (Object.keys(errors).length ===0)
-  setErrors({})
-  } else {
-    setErrors(errors)
-  }
-  // const validationErrors = validateForm();
-  // if (Object.keys(validationErrors).length > 0) {
-  //   setErrors(validationErrors);
-  //   return;
+    let stepErrors = {};
 
-    const handleSubmit = async (e: React.FormEvent) => {
-      e.preventDefault();
-    };
+    if (currentStep === 1) {
+      stepErrors = validateFormStepOne();
+    } else if (currentStep === 2) {
+      stepErrors = validateFormStepTwo();
+    }
+
+    if (Object.keys(stepErrors).length === 0) {
+      setCurrentStep((prev) => prev + 1);
+      setErrors({});
+    } else {
+      setErrors(stepErrors);
+    }
+  };
+
+  const handleBack = () => {
+    setCurrentStep((prev) => prev - 1);
+    setErrors({});
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+
     try {
-      const response = await axios.post("/signup", formData);
+      const response = await axios.post(
+        "http://localhost:8080/api/auth/signup",
+        {
+          user: {
+            firstName: formData.firstName,
+            lastName: formData.lastName,
+            email: formData.email,
+            password: formData.password,
+          },
+          company: {
+            name: formData.companyName,
+            logoUrl: formData.logoUrl,
+            themeColor: formData.themeColor,
+            websiteUrl: formData.websiteUrl,
+            industryId: formData.industryId,
+          },
+          components: formData.selectedComponents,
+        }
+      );
       localStorage.setItem("token", response.data.token);
       navigate("/dashboard");
     } catch (err) {
       console.error("Signup error: ", err);
+    } finally {
+      setLoading(false);
     }
-  }
+  };
 
   return (
-    <div className="">
+    <div className="signup">
       <Logo />
-      <div>
-        <h1>Welcome to Wrkflw</h1>
-        <h2>Get started- it's free. No credit card needed.</h2>
-      </div>
-      <div>
-        {/* <button>Continue with Google</button> <p>Or</p>{" "} */}
-        <div>
-          <form onSubmit={handleSubmit}>
-            <div>
-              <label>First Name:</label>{" "}
-              <input
-                type="text"
-                id="firstName"
-                name="firstName"
-                value={formData.firstName}
-                onChange={handleChange}
-                required
-                placeholder="Anna"
-                className={`input ${
-                  errors.email ? "input--invalid" : "input--valid"
-                }`}
-              />
-              <label>Last Name:</label>{" "}
-              <input
-                type="text"
-                id="lastName"
-                name="lastName"
-                value={formData.lastName}
-                onChange={handleChange}
-                required
-                placeholder="Mercredi"
-                className={`input ${
-                  errors.email ? "input--invalid" : "input--valid"
-                }`}
-              />
-              <label htmlFor="email">Email:</label>{" "}
-              <input
-                type="email"
-                id="user[email]"
-                name="email"
-                value={formData.email}
-                onChange={handleChange}
-                required
-                placeholder="name@company.com"
-                className={`input ${
-                  errors.email ? "input--invalid" : "input--valid"
-                }`}
-              />
-              {errors.email && <p className="error-message">{errors.email}</p>}
-              <div>
+      <div className="signup__ctnr">
+        <div className="signup__intro">
+          <h1 className="signup__title">Welcome to Wrkflw</h1>
+          <h2 className="signup__subtitle">
+            Get started- it's free.
+            <br /> No credit card needed.
+          </h2>
+        </div>
+
+        <div className="steps-indicator">
+          <div className={`step${currentStep >= 1 ? "active" : ""}`}>
+            Account
+          </div>
+          <div className={`step${currentStep >= 2 ? "active" : ""}`}>
+            Company
+          </div>
+          <div className={`step${currentStep >= 3 ? "active" : ""}`}>
+            Features
+          </div>
+        </div>
+        <form onSubmit={handleSubmit}>
+          {currentStep === 1 && (
+            <div className="form-step">
+              <div className="form-group">
+                <label>First Name:</label>{" "}
+                <input
+                  type="text"
+                  id="firstName"
+                  name="firstName"
+                  value={formData.firstName}
+                  onChange={handleChange}
+                  required
+                  placeholder="Anna"
+                  className={errors.firstName ? "errors" : ""}
+                />
+                {errors.firstName && (
+                  <span className="error-message">{errors.firstName}</span>
+                )}
+              </div>
+
+              <div className="form-group">
+                <label>Last Name:</label>{" "}
+                <input
+                  type="text"
+                  id="lastName"
+                  name="lastName"
+                  value={formData.lastName}
+                  onChange={handleChange}
+                  required
+                  placeholder="Mercredi"
+                  className={errors.lastName ? "errors" : ""}
+                />
+                {errors.lastName && (
+                  <span className="error-message">{errors.lastName}</span>
+                )}
+              </div>
+
+              <div className="form-group">
+                <label htmlFor="email">Email:</label>{" "}
+                <input
+                  type="email"
+                  id="user[email]"
+                  name="email"
+                  value={formData.email}
+                  onChange={handleChange}
+                  required
+                  placeholder="name@company.com"
+                  className={errors.email ? "errors" : ""}
+                />
+                {errors.email && (
+                  <span className="error-message">{errors.email}</span>
+                )}
+              </div>
+
+              <div className="form-group">
                 <label>Password:</label>{" "}
                 <input
                   type="password"
@@ -223,15 +303,14 @@ const SignupContent: React.FC = () => {
                   value={formData.password}
                   required
                   onChange={handleChange}
-                  className={`input ${
-                    errors.password ? "input--invalid" : "input--valid"
-                  }`}
+                  className={errors.password ? "errors" : ""}
                 />
                 {errors.password && (
-                  <p className="error-message">{errors.password}</p>
+                  <span className="error-message">{errors.password}</span>
                 )}
               </div>
-              <div>
+
+              <div className="form-group">
                 <label>Confirm Password:</label>{" "}
                 <input
                   type="password"
@@ -240,18 +319,44 @@ const SignupContent: React.FC = () => {
                   value={formData.confirmPassword}
                   required
                   onChange={handleChange}
-                  className={`input ${
-                    errors.confirmPassword ? "input--invalid" : "input--valid"
-                  }`}
+                  className={errors.password ? "errors" : ""}
                 />
                 {errors.confirmPassword && (
-                  <p className="error-message">{errors.confirmPassword}</p>
+                  <span className="error-message">
+                    {errors.confirmPassword}
+                  </span>
                 )}
               </div>
-              <button type="button" className="next-btn" onClick={}>
+
+              <button
+                type="button"
+                className="next-btn"
+                onClick={handleClickNext}
+              >
                 Next
               </button>
-              <div>
+            </div>
+          )}
+
+          {currentStep === 2 && (
+            <div className="form-step">
+              <div className="form-group">
+                <label htmlFor="companyName">Company Name:</label>
+                <input
+                  type="text"
+                  name="companyName"
+                  id="companyName"
+                  placeholder="Company Name"
+                  value={formData.companyName}
+                  onChange={handleChange}
+                  className={errors.companyName ? "errors" : ""}
+                />
+                {errors.companyName && (
+                  <span className="error-message">{errors.companyName}</span>
+                )}
+              </div>
+
+              <div className="form-group">
                 <label htmlFor="industryId">Industry:</label>
                 <select
                   id="industryId"
@@ -260,26 +365,97 @@ const SignupContent: React.FC = () => {
                   value={formData.industryId || ""}
                   onChange={handleChange}
                 >
+                  <option value="">Select an Industry</option>
                   {industries.map((industry) => (
                     <option key={industry.id} value={industry.id}>
                       {industry.name}
                     </option>
                   ))}
                 </select>
+                {errors.industryId && (
+                  <span className="error-message">{errors.industryId}</span>
+                )}
               </div>
+
+              <div className="form-group">
+                <label htmlFor="websiteUrl">Website URL: (optional)</label>
+                <input
+                  required={false}
+                  type="text"
+                  name="websiteUrl"
+                  id="websiteUrl"
+                  value={formData.websiteUrl}
+                  onChange={handleChange}
+                  placeholder="https://website.com"
+                  className={errors.websiteUrl ? "error" : ""}
+                />
+                {errors.websiteUrl && (
+                  <span className="error-message">{errors.websiteUrl}</span>
+                )}
+              </div>
+
+              <div className="button-group">
+                <button type="button" onClick={handleBack} className="back-btn">
+                  Back
+                </button>
+                <button
+                  type="button"
+                  onClick={handleClickNext}
+                  className="next-btn"
+                >
+                  Next
+                </button>
+              </div>
+            </div>
+          )}
+
+          {currentStep === 3 && (
+            <div className="form-step">
+              <h3>Select Your Features</h3>
               <div className="components__grid">
                 {components.map((component) => (
-                  <div key={component.id}>
-                    {component.name} {component.description}
+                  <div
+                    key={component.id}
+                    className={`component-card ${
+                      formData.selectedComponents.includes(component.id)
+                        ? "selected"
+                        : ""
+                    }`}
+                    onClick={() => handleComponentSelection(component.id)}
+                  >
+                    <h4>{component.name}</h4> <p>{component.description}</p>
                   </div>
                 ))}
               </div>
-              <button type="submit">Sign Up</button>
+              {errors.submit && (
+                <div className="error-message">{errors.submit}</div>
+              )}
+
+              <div className="button-group">
+                <button type="button" onClick={handleBack} className="back-btn">
+                  Back
+                </button>
+                <button
+                  type="submit"
+                  disabled={loading || formData.selectedComponents.length === 0}
+                  className="submit-btn"
+                >
+                  {loading ? "Creating Account..." : "Complete Signup"}
+                </button>
+              </div>
             </div>
-          </form>
-          <div>
-            <p>Already have an account?</p> <Link to="/login">Login</Link>
-          </div>
+          )}
+        </form>
+
+        <div className="social-signup">
+          <button className="google-btn">Continue with Google</button>
+        </div>
+
+        <div className="login-prompt">
+          <p>Already have an account?</p>{" "}
+          <Link to="/login" className="login-link">
+            Login
+          </Link>
         </div>
       </div>
     </div>

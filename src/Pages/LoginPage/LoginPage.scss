@@ -9,7 +9,6 @@
     display: flex;
     width: 100%;
     padding: 0 1rem;
-
     background-color: #163c49;
   }
   &__ctnr {
@@ -92,4 +91,8 @@
 .signup-link {
   color: darkcyan;
   font-weight: 700;
+
+  &:hover {
+    text-decoration: underline;
+  }
 }

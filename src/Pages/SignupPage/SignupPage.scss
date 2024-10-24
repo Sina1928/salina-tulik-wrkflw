@@ -1,22 +1,244 @@
 @use "../../styles/reset" as *;
 
-.signup-ctnr {
-  display: flex;
-  // height: 100%;
-  // width: 50%;
-  // position: fixed;
-  // z-index: 1;
-  // top: 0;
-  // overflow-x: hidden;
-  // padding-top: 20px;
-}
-
-.signup-left {
+.signup {
   display: flex;
   flex-direction: column;
+  align-items: center;
+  min-height: 100vh;
+  padding: 2rem;
+  background-color: #163c49;
+
+  &__ctnr {
+    max-width: 37.5rem;
+    width: 100%;
+    margin-top: 2rem;
+    padding: 2rem;
+    background-color: #fff;
+    border-radius: 0.5rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+
+  &__intro {
+    text-align: center;
+    margin-bottom: 2rem;
+  }
+
+  &__title {
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
+  }
+  &__subtitle {
+    font-size: 1.25rem;
+  }
 }
 
-.signup-right {
+.steps-indicator {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 2rem;
+  padding-bottom: 1rem;
+  border-bottom: 0.125rem solid #eee;
+
+  .step {
+    text-align: center;
+    color: #666;
+    position: relative;
+
+    &.active {
+      background-color: darkcyan;
+      font-weight: 700;
+
+      &::after {
+        content: "";
+        position: absolute;
+        left: 0;
+        width: 100%;
+        height: 0.125rem;
+        color: turquoise;
+      }
+    }
+  }
+}
+
+.loading-spinner {
+  display: inline-block;
+  width: 1.25rem;
+  height: 1.25rem;
+  border: 2px solid darkcyan;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  margin-right: 0.5rem;
+
+  @keyframes spin {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+}
+
+.form-step {
+  animation: slideIn 0.3s ease-out;
+
+  @keyframes slideIn {
+    from {
+      opacity: 0;
+      transform: translateX(1.25rem);
+    }
+    to {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+  .form-group {
+    margin-bottom: 1.5rem;
+
+    label {
+      display: block;
+      margin-bottom: 0.5rem;
+      font-weight: 500;
+    }
+
+    input,
+    select {
+      width: 100%;
+      padding: 0.75rem;
+      border: 1px solid #163c49;
+      border-radius: 0.25rem;
+
+      &:focus {
+        outline: none;
+        border: 1px solid cyan;
+        box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
+      }
+
+      &.errors {
+        border: 1px solid #dc3545;
+
+        &:focus {
+          box-shadow: 0 0 0 2px rgba(220, 53, 69, 0.25);
+        }
+      }
+    }
+    .error-message {
+      margin-top: 0.5rem;
+      color: #dc3545;
+      font-size: 0.85rem;
+    }
+  }
+}
+
+.components__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(15.625rem, 1fr));
+  gap: 1rem;
+  margin-bottom: 2rem;
+
+  .component-card {
+    padding: 1rem;
+    border: 0.125rem solid #ddd;
+    border-radius: 0.25rem;
+    cursor: pointer;
+
+    &:hover {
+      border-color: cyan;
+    }
+
+    &.selected {
+      border-color: cyan;
+      background-color: rgba(0, 123, 255, 0.05);
+    }
+
+    h4 {
+      margin: 0 0 0.5rem;
+      color: #333;
+    }
+
+    p {
+      margin: 0;
+      color: #666;
+      font-size: 0.875rem;
+    }
+  }
+}
+
+.button-group {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-top: 2rem;
+}
+
+.next-btn,
+.back-btn,
+.submit-btn {
+  background-color: darkcyan;
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: 0.25rem;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.next-btn,
+.submit-btn {
+  background-color: #163c49;
+
+  &:hover:not(:disabled) {
+    background-color: #ccc;
+    cursor: not-allowed;
+  }
+}
+.back-btn {
+  background-color: #fff;
+  border: 0.0625rem solid #ddd;
+  color: #666;
+
+  &:hover {
+    background-color: #f5f5f5;
+  }
+}
+
+.login-prompt {
+  margin-top: 2rem;
   display: flex;
   flex-direction: column;
+  align-items: center;
+  text-align: center;
+
+  .login-link {
+    color: darkcyan;
+    font-weight: 700;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+}
+
+.loading {
+  text-align: center;
+  padding: 2rem;
+  color: #666;
+}
+
+.social-signup {
+  margin: 2rem 0;
+  text-align: center;
+
+  .google-btn {
+    width: 50%;
+    padding: 0.75rem;
+    color: darkcyan;
+    font-weight: 500;
+    background-color: white;
+    border: 1px solid #ddd;
+    border-radius: 0.25rem;
+    cursor: pointer;
+    transition: background-color 0.2s;
+
+    &:hover {
+      background-color: #f5f5f5;
+    }
+  }
 }
