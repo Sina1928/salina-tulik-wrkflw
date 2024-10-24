@@ -218,6 +218,21 @@ const SignupContent: React.FC = () => {
     }
   };
 
+  const handleLogoUpload = (file: File, url: string) => {
+    console.log("Logo uploaded:", file, url);
+  };
+
+  const handleColorExtracted = (colors: string[]) => {
+    console.log("Extracted colors:", colors);
+  };
+
+  const handleColorSelect = (color: string) => {
+    setFormData((prev) => ({
+      ...prev,
+      themeColor: color,
+    }));
+  };
+
   return (
     <div className="signup">
       <Logo />
@@ -397,7 +412,12 @@ const SignupContent: React.FC = () => {
 
               <div className="form-group">
                 <label htmlFor="logo-upload">Upload Your Logo:</label>
-                <LogoUploadTheme />
+                <LogoUploadTheme
+                  onLogoUpload={handleLogoUpload}
+                  onColorExtracted={handleColorExtracted}
+                  onThemeColorSelect={handleColorSelect}
+                  selectedThemeColor={formData.themeColor}
+                />
               </div>
 
               <div className="button-group">
