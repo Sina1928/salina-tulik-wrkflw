@@ -4,6 +4,7 @@ import { Link, useNavigate } from "react-router-dom";
 import Logo from "@/components/Logo/Logo";
 import { SignupProvider } from "@/contexts/SignupContext";
 import "./SignupPage.scss";
+import LogoUploadTheme from "@/components/LogoUploadTheme/LogoUploadTheme";
 
 interface Industry {
   id: number;
@@ -392,6 +393,11 @@ const SignupContent: React.FC = () => {
                 {errors.websiteUrl && (
                   <span className="error-message">{errors.websiteUrl}</span>
                 )}
+              </div>
+
+              <div className="form-group">
+                <label htmlFor="logo-upload">Upload Your Logo:</label>
+                <LogoUploadTheme />
               </div>
 
               <div className="button-group">
