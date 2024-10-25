@@ -12,6 +12,11 @@ const LoginContent: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    if (!email || !password) {
+      return;
+    }
+
     try {
       await login(email, password);
       navigate("/dashboard");
@@ -30,7 +35,16 @@ const LoginContent: React.FC = () => {
         <form className="login__form" onSubmit={handleSubmit}>
           {error && (
             <div className="error__message">
-              {error} <button onClick={clearError}>✕</button>
+              {error}{" "}
+              <button
+                className="error__close"
+                onClick={(e) => {
+                  e.preventDefault();
+                  clearError();
+                }}
+              >
+                ✕
+              </button>
             </div>
           )}
           <div className="login__group">

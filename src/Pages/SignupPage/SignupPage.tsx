@@ -25,10 +25,10 @@ interface FormData {
   password: string;
   confirmPassword: string;
   companyName: string; // Company Info
-  logoUrl: string;
+  logoUrl: any;
   themeColor: string;
   websiteUrl: string;
-  industryId: string | null;
+  industryId: number | null;
   selectedComponents: number[]; // Component Info
 }
 
@@ -161,6 +161,7 @@ const SignupContent: React.FC = () => {
         ? prev.selectedComponents.filter((id) => id !== componentId)
         : [...prev.selectedComponents, componentId],
     }));
+    console.log(formData.selectedComponents);
   };
 
   const handleClickNext = () => {
@@ -185,6 +186,9 @@ const SignupContent: React.FC = () => {
     setErrors({});
   };
 
+  // console.log(formData);
+  // console.log(formData.logoUrl);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
@@ -193,20 +197,22 @@ const SignupContent: React.FC = () => {
       const response = await axios.post(
         "http://localhost:8080/api/auth/signup",
         {
-          user: {
-            firstName: formData.firstName,
-            lastName: formData.lastName,
-            email: formData.email,
-            password: formData.password,
+          email: formData.email,
+          password: formData.password,
+          firstName: formData.firstName,
+          lastName: formData.lastName,
+          companyName: formData.companyName,
+          industryId: formData.industryId,
+          websiteUrl: formData.websiteUrl,
+          themeColor: formData.themeColor,
+          selectedComponents: formData.selectedComponents,
+          logoUrl: formData.logoUrl,
+        },
+
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
           },
-          company: {
-            name: formData.companyName,
-            logoUrl: formData.logoUrl,
-            themeColor: formData.themeColor,
-            websiteUrl: formData.websiteUrl,
-            industryId: formData.industryId,
-          },
-          components: formData.selectedComponents,
         }
       );
       localStorage.setItem("token", response.data.token);
@@ -219,7 +225,9 @@ const SignupContent: React.FC = () => {
   };
 
   const handleLogoUpload = (file: File, url: string) => {
-    console.log("Logo uploaded:", file, url);
+    setFormData({ ...formData, logoUrl: file });
+    console.log("Logo uploaded:", file);
+    console.log(formData);
   };
 
   const handleColorExtracted = (colors: string[]) => {
@@ -232,7 +240,7 @@ const SignupContent: React.FC = () => {
       themeColor: color,
     }));
   };
-
+  console.log(formData);
   return (
     <div className="signup">
       <Logo />

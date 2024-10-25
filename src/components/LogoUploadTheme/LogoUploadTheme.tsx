@@ -18,8 +18,7 @@ const LogoUploadTheme: React.FC<LogoUploadProps> = ({
 }) => {
   const [preview, setPreview] = useState<string | null>(null);
   const [colors, setColors] = useState<string[]>([]);
-  const [showColorPicker, setShowColorPicker] = useState(false);
-  const [customColor, setCustomColor] = useState("#000000");
+  const [customColor, setCustomColor] = useState("#ffffff");
 
   const extractColors = async (imageUrl: string) => {
     const img = new Image();
@@ -48,10 +47,6 @@ const LogoUploadTheme: React.FC<LogoUploadProps> = ({
     onThemeColorSelect(color);
   };
 
-  const toggleColorPicker = () => {
-    setShowColorPicker(!showColorPicker);
-  };
-
   const onDrop = useCallback(
     async (acceptedFiles: File[]) => {
       const file = acceptedFiles[0];
@@ -64,7 +59,6 @@ const LogoUploadTheme: React.FC<LogoUploadProps> = ({
           onLogoUpload(file, url);
         };
         reader.readAsDataURL(file);
-        // const logoUrl = await uploadFile(file)
       }
     },
     [onLogoUpload, extractColors]
@@ -109,33 +103,31 @@ const LogoUploadTheme: React.FC<LogoUploadProps> = ({
                 <div className="palette-swatches">
                   {colors.map((color, index) => (
                     <button
-                      className="palette-swatch"
+                      type="button"
+                      className={`palette-swatch ${
+                        color === selectedThemeColor ? "selected" : ""
+                      }`}
                       key={index}
                       onClick={() => handleColorSelect(color)}
                       style={{ backgroundColor: color }}
                     ></button>
                   ))}
 
-                  <div className="custom-color-container">
-                    <button
-                      onClick={toggleColorPicker}
-                      className={`palette-swatch custom-color-button ${
+                  <div className="custom-color-swatch">
+                    <input
+                      type="color"
+                      className="color-picker"
+                      value={customColor}
+                      onChange={handleCustomColorChange}
+                    />
+                    <div
+                      className={`color-display ${
                         customColor === selectedThemeColor ? "selected" : ""
                       }`}
+                      style={{ backgroundColor: customColor }}
                     >
-                      <span className="plus-icon">+</span>
-                    </button>
-
-                    {showColorPicker && (
-                      <div className="color-picker-wrapper">
-                        <input
-                          type="color"
-                          value={customColor}
-                          onChange={handleCustomColorChange}
-                          className="color-picker"
-                        />
-                      </div>
-                    )}
+                      {customColor === selectedThemeColor ? "" : "+"}
+                    </div>
                   </div>
                 </div>
               </div>
