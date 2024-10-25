@@ -32,7 +32,7 @@ function DashboardPage() {
         <Card className="dashboard__card">
           <CardHeader>
             <CardTitle>User Profile</CardTitle>
-            <CardContent>{user.name}</CardContent>
+            <CardContent>{user.first_name}</CardContent>
           </CardHeader>
         </Card>
       </div>
