@@ -9,6 +9,15 @@ export interface User {
   company_id?: number;
 }
 
+export interface Company {
+  id: string;
+  name: string;
+  themeColor: string;
+  logoUrl: any;
+  industryId: number;
+  componentIds: number[];
+}
+
 export interface BaseAuthContextType {
   isAuthenticated: boolean;
   user: User | null;
