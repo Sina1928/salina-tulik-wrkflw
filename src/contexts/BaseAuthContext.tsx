@@ -22,9 +22,11 @@ export interface BaseAuthContextType {
   isAuthenticated: boolean;
   user: User | null;
   company: Company | null;
+  allCompanies: Company[];
   loading: boolean;
   login: (email: string, password: string) => Promise<void>;
   signup: (signupData: any) => Promise<void>;
+  switchCompany: (companyId: number) => void;
   error: string | null;
   logout: () => void;
   clearError: () => void;
@@ -36,17 +38,19 @@ export const BaseAuthProvider: React.FC<{ children: React.ReactNode }> = ({
 }) => {
   const [user, setUser] = useState<User | null>(null);
   const [company, setCompany] = useState<Company | null>(null);
-  // const [allCompanies, setAllCompanies] = useState<Company[]>([]);
+  const [allCompanies, setAllCompanies] = useState<Company[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const handleAuthResponse = (data: any) => {
-    const { token, user, company } = data;
+    const { token, user, company, companies } = data;
     localStorage.setItem("token", token);
     localStorage.setItem("user", JSON.stringify(user));
     localStorage.setItem("company", JSON.stringify(company));
+    localStorage.setItem("companies", JSON.stringify(companies));
     setUser(user);
     setCompany(company);
+    setAllCompanies(companies || []);
     axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
   };
 
@@ -117,6 +121,14 @@ export const BaseAuthProvider: React.FC<{ children: React.ReactNode }> = ({
     }
   };
 
+  const switchCompany = (companyId: number) => {
+    const newCompany = allCompanies.find((company) => company.id === companyId);
+    if (newCompany) {
+      setCompany(newCompany);
+      localStorage.setItem("company", JSON.stringify(newCompany));
+    }
+  };
+
   const logout = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("user");
@@ -136,8 +148,10 @@ export const BaseAuthProvider: React.FC<{ children: React.ReactNode }> = ({
         user,
         loading,
         error,
+        allCompanies,
         login,
         signup,
+        switchCompany,
         logout,
         clearError,
       }}

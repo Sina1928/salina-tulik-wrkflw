@@ -4,12 +4,20 @@ import "./DashboardPage.scss";
 import { useAuth } from "@/contexts/BaseAuthContext";
 // import axios from "axios";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Table,
+  TableHeader,
+  TableRow,
+  TableHead,
+  TableCell,
+  TableBody,
+} from "@/components/ui/table";
 
 function DashboardPage() {
   const navigate = useNavigate();
-
-  const { user, company, loading, logout } = useAuth();
-  // const [loading, setLoading] = useState(true);
+  const { user, company, allCompanies, loading, switchCompany, logout } =
+    useAuth();
+  const [isProfileOpen, setIsProfileOpen] = useState(false);
 
   useEffect(() => {
     if (company?.themeColor) {
@@ -33,6 +41,11 @@ function DashboardPage() {
   if (loading) {
     return <div className="dashboard__loading">Loading...</div>;
   }
+
+  const handleCompanySwitch = (companyId: number) => {
+    switchCompany(companyId);
+    setIsProfileOpen(false);
+  };
 
   const handleLogout = async (e: React.MouseEvent) => {
     e.preventDefault();
@@ -100,6 +113,21 @@ function DashboardPage() {
           <div className="header_text">
             <h1>Welcome, {user?.firstName}</h1>
             <p>{company?.name} Dashboard</p>
+            {allCompanies.length > 1 && (
+              <div className="company__switch">
+                <select
+                  value={company?.id}
+                  onChange={(e) => handleCompanySwitch(Number(e.target.value))}
+                  className="company-select"
+                >
+                  {allCompanies.map((c) => (
+                    <option key={c.id} value={c.id}>
+                      {c.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            )}
             <div className="profile__avatar">
               {" "}
               {company?.logoUrl && (
@@ -110,10 +138,11 @@ function DashboardPage() {
                 />
               )}
             </div>
+
+            <input type="search" placeholder="Search..." />
             <button type="button" onClick={handleLogout} className="logout-btn">
               Logout
             </button>
-            {/* {multipleCompanies} */}
           </div>
         </div>
       </header>
@@ -194,6 +223,28 @@ function DashboardPage() {
               <CardTitle className="card__title">Project Management</CardTitle>
               <CardContent>
                 <p className="card__text">Open Projects</p>
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Project</TableHead>
+                      <TableHead>Task</TableHead>
+                      <TableHead>Status</TableHead>
+                      <TableHead>Due Date</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  {/* <TableBody>
+                    {projectTasks.map((task) => (
+                      <TableRow key={task.id}>
+                        <TableCell>{task.project_name}</TableCell>
+                        <TableCell>{task.task_name}</TableCell>
+                        <TableCell>{task.status}</TableCell>
+                        <TableCell>
+                          {new Date(task.due_date).toLocaleDateString()}
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody> */}
+                </Table>
               </CardContent>
             </CardHeader>
           </Card>

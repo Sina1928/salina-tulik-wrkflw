@@ -32,3 +32,8 @@
   color: var(--company-theme);
   filter: brightness(3);
 }
+
+.header__text {
+  color: var(--company-theme);
+  filter: invert(1);
+}
