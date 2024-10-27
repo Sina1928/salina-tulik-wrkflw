@@ -2,7 +2,9 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import Logo from "@/components/Logo/Logo";
-import { SignupProvider } from "@/contexts/SignupContext";
+import { useAuth } from "@/contexts/BaseAuthContext";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Badge } from "@/components/ui/badge";
 import "./SignupPage.scss";
 import LogoUploadTheme from "@/components/LogoUploadTheme/LogoUploadTheme";
 
@@ -25,14 +27,15 @@ interface FormData {
   password: string;
   confirmPassword: string;
   companyName: string; // Company Info
-  logoUrl: any;
+  logoUrl: File | null;
   themeColor: string;
   websiteUrl: string;
   industryId: number | null;
-  selectedComponents: number[]; // Component Info
+  selectedComponents: number[];
 }
 
-const SignupContent: React.FC = () => {
+const SignupPage: React.FC = () => {
+  const { signup, error, loading, clearError } = useAuth();
   const navigate = useNavigate();
 
   const [formData, setFormData] = useState<FormData>({
@@ -42,18 +45,20 @@ const SignupContent: React.FC = () => {
     password: "",
     confirmPassword: "",
     companyName: "",
-    logoUrl: "",
+    logoUrl: null,
     themeColor: "",
     websiteUrl: "",
     industryId: null,
     selectedComponents: [],
   });
 
-  const [errors, setErrors] = useState<{ [key: string]: string }>({});
   const [industries, setIndustries] = useState<Industry[]>([]);
   const [components, setComponents] = useState<Component[]>([]);
+  const [suggestedComponents, setSuggestedComponents] = useState<number[]>([]);
   const [currentStep, setCurrentStep] = useState(1);
-  const [loading, setLoading] = useState(false);
+  const [validationErrors, setValidationErrors] = useState<{
+    [key: string]: string;
+  }>({});
 
   // fetch industries (on mount)
 
@@ -69,9 +74,10 @@ const SignupContent: React.FC = () => {
       }
     };
     fetchIndustries();
+    console.log(formData);
   }, []);
 
-  // If industryId available, fetch components
+  //   // when industry is selected, fetch components
   useEffect(() => {
     if (!formData.industryId) return;
 
@@ -81,6 +87,11 @@ const SignupContent: React.FC = () => {
           `http://localhost:8080/api/industries/${formData.industryId}/components`
         );
         setComponents(response.data);
+        const suggestedIds = response.data.map(
+          (component: Component) => component.id
+        );
+        setSuggestedComponents(suggestedIds);
+        // setFormData((prev) => ({ ...prev, selectedComponents: suggestedIds }));
       } catch (err) {
         console.error("Error fetching components", err);
       }
@@ -88,7 +99,7 @@ const SignupContent: React.FC = () => {
     fetchComponents();
   }, [formData.industryId]);
 
-  // Form Validation
+  //   // Form Validation
   const validateFormStepOne = () => {
     const newErrors: { [key: string]: string } = {};
 
@@ -140,7 +151,8 @@ const SignupContent: React.FC = () => {
       }
     }
 
-    return newErrors;
+    setValidationErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
   };
 
   const handleChange = (
@@ -149,19 +161,39 @@ const SignupContent: React.FC = () => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
 
-    if (errors[name]) {
-      setErrors((prev) => ({ ...prev, [name]: "" }));
+    if (validationErrors[name]) {
+      setValidationErrors((prev) => ({ ...prev, [name]: "" }));
     }
   };
 
+  const handleLogoUpload = (file: File) => {
+    setFormData({ ...formData, logoUrl: file });
+    console.log(formData);
+  };
+
+  const handleColorExtracted = (colors: string[]) => {
+    console.log(colors);
+  };
+
+  const handleColorSelect = (color: string) => {
+    console.log(formData);
+
+    setFormData((prev) => ({
+      ...prev,
+      themeColor: color,
+    }));
+    console.log(formData);
+  };
+
   const handleComponentSelection = (componentId: number) => {
+    console.log(formData);
     setFormData((prev) => ({
       ...prev,
       selectedComponents: prev.selectedComponents.includes(componentId)
         ? prev.selectedComponents.filter((id) => id !== componentId)
         : [...prev.selectedComponents, componentId],
     }));
-    console.log(formData.selectedComponents);
+    console.log(formData);
   };
 
   const handleClickNext = () => {
@@ -175,72 +207,68 @@ const SignupContent: React.FC = () => {
 
     if (Object.keys(stepErrors).length === 0) {
       setCurrentStep((prev) => prev + 1);
-      setErrors({});
-    } else {
-      setErrors(stepErrors);
     }
   };
 
   const handleBack = () => {
     setCurrentStep((prev) => prev - 1);
-    setErrors({});
+    setValidationErrors({});
   };
-
-  // console.log(formData);
-  // console.log(formData.logoUrl);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setLoading(true);
 
     try {
-      const response = await axios.post(
-        "http://localhost:8080/api/auth/signup",
-        {
-          email: formData.email,
-          password: formData.password,
-          firstName: formData.firstName,
-          lastName: formData.lastName,
-          companyName: formData.companyName,
-          industryId: formData.industryId,
-          websiteUrl: formData.websiteUrl,
-          themeColor: formData.themeColor,
-          selectedComponents: formData.selectedComponents,
-          logoUrl: formData.logoUrl,
-        },
-
-        {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-        }
-      );
-      localStorage.setItem("token", response.data.token);
+      await signup({
+        email: formData.email,
+        password: formData.password,
+        firstName: formData.firstName,
+        lastName: formData.lastName,
+        companyName: formData.companyName,
+        industryId: Number(formData.industryId),
+        websiteUrl: formData.websiteUrl,
+        themeColor: formData.themeColor,
+        selectedComponents: formData.selectedComponents,
+        logoUrl: formData.logoUrl,
+      });
       navigate("/dashboard");
     } catch (err) {
       console.error("Signup error: ", err);
-    } finally {
-      setLoading(false);
     }
   };
 
-  const handleLogoUpload = (file: File, url: string) => {
-    setFormData({ ...formData, logoUrl: file });
-    console.log("Logo uploaded:", file);
-    console.log(formData);
-  };
+  //     try {
+  //       const response = await axios.post(
+  //         "http://localhost:8080/api/auth/signup",
+  //         {
+  //           email: formData.email,
+  //           password: formData.password,
+  //           firstName: formData.firstName,
+  //           lastName: formData.lastName,
+  //           companyName: formData.companyName,
+  //           industryId: formData.industryId,
+  //           websiteUrl: formData.websiteUrl,
+  //           themeColor: formData.themeColor,
+  //           selectedComponents: formData.selectedComponents,
+  //           logoUrl: formData.logoUrl,
+  //         },
 
-  const handleColorExtracted = (colors: string[]) => {
-    console.log("Extracted colors:", colors);
-  };
+  //         {
+  //           headers: {
+  //             "Content-Type": "multipart/form-data",
+  //           },
+  //         }
+  //       );
+  //       localStorage.setItem("token", response.data.token);
+  //       setFormData({email:response.data.email, })
+  //       navigate("/dashboard");
+  //     } catch (err) {
+  //       console.error("Signup error: ", err);
+  //     } finally {
+  //       setLoading(false);
+  //     }
+  //   };
 
-  const handleColorSelect = (color: string) => {
-    setFormData((prev) => ({
-      ...prev,
-      themeColor: color,
-    }));
-  };
-  console.log(formData);
   return (
     <div className="signup">
       <Logo />
@@ -264,6 +292,16 @@ const SignupContent: React.FC = () => {
             Features
           </div>
         </div>
+
+        {error && (
+          <div className="error__message">
+            {error}
+            <button type="button" className="error__close" onClick={clearError}>
+              x
+            </button>
+          </div>
+        )}
+
         <form onSubmit={handleSubmit}>
           {currentStep === 1 && (
             <div className="form-step">
@@ -277,10 +315,12 @@ const SignupContent: React.FC = () => {
                   onChange={handleChange}
                   required
                   placeholder="Anna"
-                  className={errors.firstName ? "errors" : ""}
+                  className={validationErrors.firstName ? "errors" : ""}
                 />
-                {errors.firstName && (
-                  <span className="error-message">{errors.firstName}</span>
+                {validationErrors.firstName && (
+                  <span className="error-message">
+                    {validationErrors.firstName}
+                  </span>
                 )}
               </div>
 
@@ -294,10 +334,12 @@ const SignupContent: React.FC = () => {
                   onChange={handleChange}
                   required
                   placeholder="Mercredi"
-                  className={errors.lastName ? "errors" : ""}
+                  className={validationErrors.lastName ? "errors" : ""}
                 />
-                {errors.lastName && (
-                  <span className="error-message">{errors.lastName}</span>
+                {validationErrors.lastName && (
+                  <span className="error-message">
+                    {validationErrors.lastName}
+                  </span>
                 )}
               </div>
 
@@ -311,10 +353,12 @@ const SignupContent: React.FC = () => {
                   onChange={handleChange}
                   required
                   placeholder="name@company.com"
-                  className={errors.email ? "errors" : ""}
+                  className={validationErrors.email ? "errors" : ""}
                 />
-                {errors.email && (
-                  <span className="error-message">{errors.email}</span>
+                {validationErrors.email && (
+                  <span className="error-message">
+                    {validationErrors.email}
+                  </span>
                 )}
               </div>
 
@@ -327,10 +371,12 @@ const SignupContent: React.FC = () => {
                   value={formData.password}
                   required
                   onChange={handleChange}
-                  className={errors.password ? "errors" : ""}
+                  className={validationErrors.password ? "errors" : ""}
                 />
-                {errors.password && (
-                  <span className="error-message">{errors.password}</span>
+                {validationErrors.password && (
+                  <span className="error-message">
+                    {validationErrors.password}
+                  </span>
                 )}
               </div>
 
@@ -343,11 +389,11 @@ const SignupContent: React.FC = () => {
                   value={formData.confirmPassword}
                   required
                   onChange={handleChange}
-                  className={errors.password ? "errors" : ""}
+                  className={validationErrors.password ? "errors" : ""}
                 />
-                {errors.confirmPassword && (
+                {validationErrors.confirmPassword && (
                   <span className="error-message">
-                    {errors.confirmPassword}
+                    {validationErrors.confirmPassword}
                   </span>
                 )}
               </div>
@@ -373,10 +419,12 @@ const SignupContent: React.FC = () => {
                   placeholder="Company Name"
                   value={formData.companyName}
                   onChange={handleChange}
-                  className={errors.companyName ? "errors" : ""}
+                  className={validationErrors.companyName ? "errors" : ""}
                 />
-                {errors.companyName && (
-                  <span className="error-message">{errors.companyName}</span>
+                {validationErrors.companyName && (
+                  <span className="error-message">
+                    {validationErrors.companyName}
+                  </span>
                 )}
               </div>
 
@@ -384,7 +432,7 @@ const SignupContent: React.FC = () => {
                 <label htmlFor="industryId">Industry:</label>
                 <select
                   id="industryId"
-                  className={errors.industryId ? "error" : ""}
+                  className={validationErrors.industryId ? "error" : ""}
                   name="industryId"
                   value={formData.industryId || ""}
                   onChange={handleChange}
@@ -396,8 +444,10 @@ const SignupContent: React.FC = () => {
                     </option>
                   ))}
                 </select>
-                {errors.industryId && (
-                  <span className="error-message">{errors.industryId}</span>
+                {validationErrors.industryId && (
+                  <span className="error-message">
+                    {validationErrors.industryId}
+                  </span>
                 )}
               </div>
 
@@ -411,10 +461,12 @@ const SignupContent: React.FC = () => {
                   value={formData.websiteUrl}
                   onChange={handleChange}
                   placeholder="https://website.com"
-                  className={errors.websiteUrl ? "error" : ""}
+                  className={validationErrors.websiteUrl ? "error" : ""}
                 />
-                {errors.websiteUrl && (
-                  <span className="error-message">{errors.websiteUrl}</span>
+                {validationErrors.websiteUrl && (
+                  <span className="error-message">
+                    {validationErrors.websiteUrl}
+                  </span>
                 )}
               </div>
 
@@ -446,6 +498,14 @@ const SignupContent: React.FC = () => {
           {currentStep === 3 && (
             <div className="form-step">
               <h3>Select Your Features</h3>
+              {suggestedComponents.length > 0 && (
+                <Alert>
+                  <AlertDescription>
+                    Based on your industry, we recommend the following features.
+                    Click to select or deselect from the following options.
+                  </AlertDescription>
+                </Alert>
+              )}
               <div className="components__grid">
                 {components.map((component) => (
                   <div
@@ -454,15 +514,21 @@ const SignupContent: React.FC = () => {
                       formData.selectedComponents.includes(component.id)
                         ? "selected"
                         : ""
+                    } ${
+                      suggestedComponents.includes(component.id)
+                        ? "suggested"
+                        : ""
+                    }
                     }`}
                     onClick={() => handleComponentSelection(component.id)}
                   >
+                    <Badge variant="outline">Recommended</Badge>
                     <h4>{component.name}</h4> <p>{component.description}</p>
                   </div>
                 ))}
               </div>
-              {errors.submit && (
-                <div className="error-message">{errors.submit}</div>
+              {validationErrors.submit && (
+                <div className="error-message">{validationErrors.submit}</div>
               )}
 
               <div className="button-group">
@@ -496,12 +562,12 @@ const SignupContent: React.FC = () => {
   );
 };
 
-export const SignupPage: React.FC = () => {
-  return (
-    <SignupProvider>
-      <SignupContent />
-    </SignupProvider>
-  );
-};
+// export const SignupPage: React.FC = () => {
+//   return (
+//     <SignupProvider>
+//       <SignupContent />
+//     </SignupProvider>
+//   );
+// };
 
 export default SignupPage;

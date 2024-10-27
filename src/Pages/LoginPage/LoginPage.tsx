@@ -1,11 +1,11 @@
 import { Link, useNavigate } from "react-router-dom";
 import Logo from "@/components/Logo/Logo";
 import { useState } from "react";
-import { LoginProvider, useLogin } from "@/contexts/LoginContext";
+import { useAuth } from "@/contexts/BaseAuthContext";
 import "./LoginPage.scss";
 
-const LoginContent: React.FC = () => {
-  const { login, error, loading, clearError } = useLogin();
+const LoginPage: React.FC = () => {
+  const { login, error, loading, clearError } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
@@ -95,14 +95,6 @@ const LoginContent: React.FC = () => {
         </form>
       </div>
     </div>
-  );
-};
-
-export const LoginPage: React.FC = () => {
-  return (
-    <LoginProvider>
-      <LoginContent />
-    </LoginProvider>
   );
 };
 

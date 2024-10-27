@@ -1,153 +1,169 @@
-import { User, BaseAuthContextType } from "./BaseAuthContext.tsx";
-import React, { useState, createContext, useContext } from "react";
-import axios from "axios";
+// import { User, Company, BaseAuthContextType } from "./BaseAuthContext.tsx";
+// import React, { useState, createContext, useContext } from "react";
+// import axios from "axios";
 
-interface Company {
-  id: string;
-  name: string;
-  themeColor: string;
-  logoUrl: any;
-  industryId: number;
-  componentIds: number[];
-}
-interface LoginContextType extends BaseAuthContextType {
-  login: (email: string, password: string) => Promise<void>;
-  company: Company | null;
-  allCompanies: Company[];
-  setCompany: (company: Company) => void;
-  switchCompany: (companyId: string) => Promise<void>;
-}
+// const defaultUser: User = {
+//   id: 0,
+//   email: "",
+//   first_name: "",
+//   last_name: "",
+//   company_id: 0,
+// };
 
-const LoginContext = createContext<LoginContextType | null>(null);
+// const defaultCompany: Company = {
+//   id: 0,
+//   name: "",
+//   themeColor: "",
+//   logoUrl: null,
+//   industryId: 0,
+//   componentIds: [],
+// };
 
-export const LoginProvider: React.FC<{ children: React.ReactNode }> = ({
-  children,
-}) => {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [user, setUser] = useState<User | null>(null);
-  const [company, setCompany] = useState<Company | null>(null);
-  const [allCompanies, setAllCompanies] = useState<Company[]>([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+// interface LoginContextType extends BaseAuthContextType {
+//   login: (email: string, password: string) => Promise<void>;
+//   company: Company;
+//   allCompanies: Company[];
+//   setCompany: (company: Company) => void;
+//   switchCompany: (companyId: number) => Promise<void>;
+// }
 
-  const login = async (email: string, password: string) => {
-    try {
-      setLoading(true);
-      setError(null);
+// const LoginContext = createContext<LoginContextType | null>(null);
 
-      const response = await axios.post(
-        "http://localhost:8080/api/auth/login",
-        {
-          email,
-          password,
-        }
-      );
-      const { token, user, company: primaryCompany, companies } = response.data;
-      if (!token || !user) {
-        throw new Error("Invalid response from server");
-      }
-      localStorage.setItem("accessToken", token);
-      setUser(user);
-      setIsAuthenticated(true);
-      setCompany(primaryCompany);
-      setAllCompanies(companies || [primaryCompany]);
+// export const LoginProvider: React.FC<{ children: React.ReactNode }> = ({
+//   children,
+// }) => {
+//   const [isAuthenticated, setIsAuthenticated] = useState(false);
+//   const [user, setUser] = useState<User>(defaultUser);
+//   const [company, setCompany] = useState<Company>(defaultCompany);
+//   const [allCompanies, setAllCompanies] = useState<Company[]>([]);
+//   const [loading, setLoading] = useState(false);
+//   const [error, setError] = useState<string | null>(null);
 
-      if (primaryCompany) {
-        localStorage.setItem("selectedCompanyId", primaryCompany.id);
-      }
+//   const login = async (email: string, password: string) => {
+//     try {
+//       setLoading(true);
+//       setError(null);
 
-      console.log(response.data);
+//       const response = await axios.post(
+//         "http://localhost:8080/api/auth/login",
+//         {
+//           email,
+//           password,
+//         }
+//       );
+//       const { token, user, company: primaryCompany, companies } = response.data;
+//       if (!token || !user) {
+//         throw new Error("Invalid response from server");
+//       }
+//       localStorage.setItem("accessToken", token);
+//       localStorage.setItem("user", user);
+//       localStorage.setItem("company", primaryCompany);
+//       localStorage.setItem("companies", companies);
+//       setUser(user);
+//       setIsAuthenticated(true);
+//       setCompany(primaryCompany);
+//       setAllCompanies(companies || [primaryCompany]);
 
-      return user;
-    } catch (err: any) {
-      console.error("Login failed: ", err);
-      const message = err.response?.data?.error || "Login failed";
-      setError(message);
-      throw new Error(message);
-    } finally {
-      setLoading(false);
-    }
-  };
+//       if (primaryCompany) {
+//         localStorage.setItem("selectedCompanyId", primaryCompany.id.toString());
+//       }
 
-  const switchCompany = async (companyId: string) => {
-    try {
-      setLoading(true);
-      const chooseCompany = allCompanies.find(
-        (company) => company.id === companyId
-      );
+//       // console.log(response.data);
+//       // console.log(user);
+//       // console.log(primaryCompany);
+//       // console.log(token);
+//       // console.log(companies);
 
-      if (!chooseCompany) {
-        throw new Error("Invalid company selection");
-      }
+//       return { user, token, primaryCompany, companies };
+//     } catch (err: any) {
+//       console.error("Login failed: ", err);
+//       const message = err.response?.data?.error || "Login failed";
+//       setError(message);
+//       throw new Error(message);
+//     } finally {
+//       setLoading(false);
+//     }
+//   };
 
-      const response = await axios.get(
-        `http://localhost:8080/api/companies/${companyId}`,
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
-          },
-        }
-      );
+//   const switchCompany = async (companyId: number) => {
+//     try {
+//       setLoading(true);
+//       const chooseCompany = allCompanies.find(
+//         (company) => company.id === companyId
+//       );
 
-      const updatedCompany = response.data;
-      setCompany(updatedCompany);
-      localStorage.setItem("selectedCompanyId", companyId);
-    } catch (err: any) {
-      console.error("Company switch failed: ", err);
-    } finally {
-      setLoading(false);
-    }
-  };
+//       if (!chooseCompany) {
+//         throw new Error("Invalid company selection");
+//       }
 
-  const logout = () => {
-    localStorage.removeItem("accessToken");
-    localStorage.removeItem("selectedCompanyId");
-    setCompany(null);
-    setUser(null);
-    setAllCompanies([]);
-    setIsAuthenticated(false);
-  };
+//       const response = await axios.get(
+//         `http://localhost:8080/api/companies/${companyId}`,
+//         {
+//           headers: {
+//             Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+//           },
+//         }
+//       );
 
-  const clearError = () => setError(null);
+//       const updatedCompany = response.data;
+//       setCompany(updatedCompany);
+//       localStorage.setItem("selectedCompanyId", companyId.toString());
+//     } catch (err: any) {
+//       console.error("Company switch failed: ", err);
+//     } finally {
+//       setLoading(false);
+//     }
+//   };
 
-  return (
-    <LoginContext.Provider
-      value={{
-        isAuthenticated,
-        user,
-        company,
-        allCompanies,
-        loading,
-        error,
-        login,
-        logout,
-        clearError,
-        setCompany,
-        switchCompany,
-      }}
-    >
-      {children}
-    </LoginContext.Provider>
-  );
-};
+//   const logout = () => {
+//     localStorage.removeItem("accessToken");
+//     localStorage.removeItem("selectedCompanyId");
+//     setCompany(defaultCompany);
+//     setUser(defaultUser);
+//     setAllCompanies([]);
+//     setIsAuthenticated(false);
+//   };
 
-export const useLogin = () => {
-  const context = useContext(LoginContext);
-  if (!context) {
-    throw new Error("useLogin must be used within a LoginProvider");
-  }
-  return context;
-};
+//   const clearError = () => setError(null);
 
-export const useCompany = () => {
-  const context = useLogin();
-  const { company, allCompanies, switchCompany, setCompany } = context;
+//   const contextValue: LoginContextType = {
+//     isAuthenticated,
+//     user,
+//     company,
+//     allCompanies,
+//     loading,
+//     error,
+//     login,
+//     logout,
+//     clearError,
+//     setCompany,
+//     switchCompany,
+//   };
 
-  return {
-    company,
-    allCompanies,
-    switchCompany,
-    setCompany,
-    multipleCompanies: allCompanies.length > 1,
-  };
-};
+//   return (
+//     <LoginContext.Provider value={contextValue}>
+//       {children}
+//     </LoginContext.Provider>
+//   );
+// };
+
+// export const useLogin = () => {
+//   const context = useContext(LoginContext);
+//   if (!context) {
+//     throw new Error("useLogin must be used within a LoginProvider");
+//   }
+//   return context;
+// };
+
+// export const useCompany = () => {
+//   const context = useLogin();
+//   const { company, allCompanies, switchCompany, setCompany } = context;
+
+//   return {
+//     company,
+//     allCompanies,
+//     switchCompany,
+//     setCompany,
+//     multipleCompanies: allCompanies.length > 1,
+//   };
+// };
