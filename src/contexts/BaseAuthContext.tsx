@@ -3,10 +3,10 @@ import axios from "axios";
 export interface User {
   id: number;
   email: string;
-  first_name: string;
-  last_name: string;
+  firstName: string;
+  lastName: string;
   role?: string;
-  company_id?: number;
+  companyId?: number;
 }
 
 export interface Company {

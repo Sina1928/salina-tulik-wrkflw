@@ -5,6 +5,7 @@ import { BaseAuthProvider } from "./contexts/BaseAuthContext.tsx";
 import SignupPage from "./Pages/SignupPage/SignupPage.tsx";
 import LoginPage from "./Pages/LoginPage/LoginPage.tsx";
 import DashboardPage from "./Pages/DashboardPage/DashboardPage.tsx";
+import NotFoundPage from "./Pages/NotFoundPage/NotFoundPage.tsx";
 
 // const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({
 //   children,
@@ -36,6 +37,7 @@ function App() {
           <Route path="/signup" element={<SignupPage />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/dashboard" element={<DashboardPage />} />
+          <Route path="*" element={<NotFoundPage />} />
         </Routes>
       </BaseAuthProvider>
     </BrowserRouter>

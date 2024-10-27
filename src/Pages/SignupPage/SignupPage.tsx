@@ -505,7 +505,7 @@ const SignupPage: React.FC = () => {
                     Click to select or deselect from the following options.
                   </AlertDescription>
                 </Alert>
-              )}
+              )}{" "}
               <div className="components__grid">
                 {components.map((component) => (
                   <div
@@ -522,7 +522,7 @@ const SignupPage: React.FC = () => {
                     }`}
                     onClick={() => handleComponentSelection(component.id)}
                   >
-                    <Badge variant="outline">Recommended</Badge>
+                    <Badge className="recommended__badge">Recommended</Badge>
                     <h4>{component.name}</h4> <p>{component.description}</p>
                   </div>
                 ))}
@@ -530,7 +530,6 @@ const SignupPage: React.FC = () => {
               {validationErrors.submit && (
                 <div className="error-message">{validationErrors.submit}</div>
               )}
-
               <div className="button-group">
                 <button type="button" onClick={handleBack} className="back-btn">
                   Back
