@@ -1,15 +1,56 @@
-.logout-btn {
-  background-color: aquamarine;
+.action-btn {
+  //   background-color: var(--company-theme);
+  display: flex;
+  color: var(--company-theme);
+  filter: invert(1);
 }
 
+.search-bar {
+  border-radius: 0.25rem;
+}
+
+.profile__avatar,
 .company-logo {
   width: 3.125rem;
   height: 3.125rem;
   border-radius: 50%;
+
+  &--default {
+    background-color: #ddd;
+    width: 3.125rem;
+    height: 3.125rem;
+    border-radius: 50%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-transform: uppercase;
+    color: var(--company-theme);
+  }
+}
+.dashboard {
+  max-width: 80rem;
+  display: flex;
+  flex-direction: column;
+  justify-items: center;
+  position: relative;
+
+  &__grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(25rem, 1fr));
+    gap: 1rem;
+    max-height: 45rem;
+    margin: 0 auto;
+    padding: 1rem;
+  }
 }
 
 .dashboard__header {
   background-color: var(--company-theme);
+  display: flex;
+  width: 100%;
+  padding: 1rem;
+  position: relative;
 }
 
 .card__title {
@@ -23,17 +64,110 @@
   background-color: var(--company-theme);
   display: flex;
   width: 25rem;
-  margin: 1rem;
+  margin-bottom: 1rem;
   padding: 1rem;
   border-radius: 0.25rem;
 }
 
 .card__text {
   color: var(--company-theme);
-  filter: brightness(3);
+  filter: invert(1);
+  font-weight: 500;
 }
 
-.header__text {
+.header__title,
+.header__subtitle {
+  display: flex;
   color: var(--company-theme);
   filter: invert(1);
+}
+
+.header__content {
+  display: flex;
+  flex-direction: column;
+}
+
+.profile-dropdown__trigger {
+  display: flex;
+  cursor: pointer;
+  align-items: center;
+  gap: 0.5rem;
+  transition: transform 0.2s;
+  background-color: none;
+  border: none;
+  padding: 0.5rem;
+
+  &:hover {
+    transform: translateY(-1px);
+  }
+}
+
+.profile-dropdown {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  position: absolute;
+  right: 2rem;
+  top: 1rem;
+  z-index: 50;
+}
+
+.navbar {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  border: 1px solid #ddd;
+  border-top: none;
+  max-width: 80rem;
+}
+
+.nav-title {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin: 0 1rem;
+  padding: 1rem;
+  width: 7.5rem;
+  cursor: pointer;
+  color: var(--company-theme);
+}
+
+.dropdown__user-info {
+  color: var(--company-theme);
+  filter: invert(1);
+  font-weight: 500;
+  display: flex;
+  flex-direction: column;
+}
+
+.dropdown__label {
+  color: var(--company-theme);
+  filter: invert(1);
+  font-weight: 500;
+}
+
+.dropdown-arrow {
+  transition: transform 0.3s ease;
+
+  &.open {
+    transform: rotate(180deg);
+  }
+}
+
+.dropdown__content {
+  background-color: var(--company-theme);
+  filter: invert(1);
+}
+
+.dropdown__companies {
+  filter: invert(1);
+}
+
+.company-option__name,
+.active-indicator,
+.user-name,
+.user-email {
+  color: var(--company-theme);
+  margin: 0.25rem;
 }

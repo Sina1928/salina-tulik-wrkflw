@@ -1,8 +1,23 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import "./DashboardPage.scss";
 import { useAuth } from "@/contexts/BaseAuthContext";
-// import axios from "axios";
+import {
+  ChevronDown,
+  LogOut,
+  Settings,
+  FileText,
+  Landmark,
+  Share2,
+  ShieldPlus,
+  Clock,
+  HandCoins,
+  ChartGantt,
+  CalendarDays,
+  ScanBarcode,
+  UserRoundCheck,
+  House,
+} from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Table,
@@ -15,6 +30,7 @@ import {
 
 function DashboardPage() {
   const navigate = useNavigate();
+  const dropdownRef = useRef<HTMLDivElement>(null);
   const { user, company, allCompanies, loading, switchCompany, logout } =
     useAuth();
   const [isProfileOpen, setIsProfileOpen] = useState(false);
@@ -42,6 +58,25 @@ function DashboardPage() {
     return <div className="dashboard__loading">Loading...</div>;
   }
 
+  useEffect(() => {
+    function handleOutsideClick(event: MouseEvent) {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target as Node)
+      ) {
+        setIsProfileOpen(false);
+      }
+    }
+
+    if (isProfileOpen) {
+      document.addEventListener("mousedown", handleOutsideClick);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleOutsideClick);
+    };
+  }, [isProfileOpen]);
+
   const handleCompanySwitch = (companyId: number) => {
     switchCompany(companyId);
     setIsProfileOpen(false);
@@ -56,42 +91,6 @@ function DashboardPage() {
       console.error("Error logging out", err);
     }
   };
-  //   const {
-  //     company,
-  //     allCompanies,
-  //     switchCompany,
-  //     multipleCompanies,
-  //   }: {
-  //     company: Company;
-  //     allCompanies: Company[];
-  //     switchCompany: (companyId: number) => Promise<void>;
-  //     multipleCompanies: boolean;
-  //   } = useCompany();
-
-  //   useEffect(() => {
-  //     console.log("User Data:", user);
-  //     console.log("Company Data:", company);
-  //     console.log("All Companies:", allCompanies);
-  //   }, [user, company, allCompanies]);
-
-  //   const handleCompanySwitch = async (companyId: number): Promise<void> => {
-  //     try {
-  //       await switchCompany(companyId);
-  //     } catch (err) {
-  //       console.error("Error switching company: ", err);
-  //     }
-  //   };
-
-  //   if (!user || !company) {
-  //     return <div>No user or company data available</div>;
-  //   }
-
-  //   if (error) {
-  //     return <div>Error</div>;
-  //   }
-  console.log(user);
-  console.log(company);
-  console.log(company?.componentIds);
 
   const hasInvoicing = company?.componentIds?.includes(1);
   const hasDocumentManagement = company?.componentIds?.includes(2);
@@ -104,61 +103,293 @@ function DashboardPage() {
   const hasInventoryManagement = company?.componentIds?.includes(9);
   const hasClientRelationshipManagement = company?.componentIds?.includes(10);
 
-  console.log(hasProjectManagement);
+  const projectTasks = [
+    {
+      id: 1,
+      project_name: "Project 1",
+      task_name: "Task 1",
+      status: "In Progress",
+      due_date: 1730341807,
+    },
+    {
+      id: 2,
+      project_name: "Project 2",
+      task_name: "Task 2",
+      status: "In Progress",
+      due_date: 1730601007,
+    },
+  ];
 
   return (
     <div className="dashboard">
       <header className="dashboard__header">
         <div className="header__content">
-          <div className="header_text">
-            <h1>Welcome, {user?.firstName}</h1>
-            <p>{company?.name} Dashboard</p>
-            {allCompanies.length > 1 && (
-              <div className="company__switch">
-                <select
-                  value={company?.id}
-                  onChange={(e) => handleCompanySwitch(Number(e.target.value))}
-                  className="company-select"
-                >
-                  {allCompanies.map((c) => (
-                    <option key={c.id} value={c.id}>
-                      {c.name}
-                    </option>
-                  ))}
-                </select>
-              </div>
-            )}
-            <div className="profile__avatar">
-              {" "}
-              {company?.logoUrl && (
+          <div className="header__text">
+            <h1 className="header__title">Welcome, {user?.firstName}</h1>
+            <p className="header__subtitle">{company?.name} Dashboard</p>
+            <input
+              type="search"
+              placeholder="Search..."
+              className="search-bar"
+            />
+            {/* <div className="profile-dropdown">
+              <button
+                className="profile-dropdown__trigger"
+                onClick={() => setIsProfileOpen(!isProfileOpen)}
+              >
+                <div className="profile__info">
+                  {company?.logoUrl ? (
+                    <img
+                      src={`http://localhost:8080/${company.logoUrl}`}
+                      alt={company.name}
+                      className="company-logo"
+                    />
+                  ) : (
+                    <div className="profile__avatar--default">
+                      {company?.name?.[0] || "W"}
+                    </div>
+                  )}
+                </div>
+                <ChevronDown
+                  className={`dropdown-arrow ${isProfileOpen ? "open" : ""}`}
+                />
+              </button>
+
+              {isProfileOpen && (
+                <div className="dropdown__content">
+                  <div className="dropdown__user-info">
+                    <p className="user-name">{user?.firstName}</p>
+                    <p className="user-email">{user?.email}</p>
+                  </div>
+
+                  {allCompanies.length > 1 && (
+                    <div className="dropdown__companies">
+                      <p className="dropdown__label">Switch Company</p>
+                      {allCompanies.map((c) => (
+                        <button
+                          key={c.id}
+                          onClick={() => handleCompanySwitch(c.id)}
+                          className={`company-option ${
+                            c.id == company?.id ? "active" : ""
+                          }`}
+                        >
+                          {c.logoUrl ? (
+                            <img
+                              src={`http://localhost:8080/${c.logoUrl}`}
+                              alt={c.name}
+                              className="profile__avatar"
+                            />
+                          ) : (
+                            <div className="profile__avatar--default">
+                              {c.name[0]}
+                            </div>
+                          )}
+
+                          <span>{c.name}</span>
+                          {c.id === company?.id && (
+                            <span className="active-indicator">✓</span>
+                          )}
+                        </button>
+                      ))}
+                    </div>
+                  )}
+
+                  <div className="dropdown__actions">
+                    <button type="button" className="action-btn">
+                      <Settings />
+                      Settings
+                    </button>
+                    <button
+                      type="button"
+                      onClick={handleLogout}
+                      className="action-btn"
+                    >
+                      <LogOut />
+                      Logout
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div> */}
+          </div>
+        </div>
+        <div className="profile-dropdown" ref={dropdownRef}>
+          <button
+            className="profile-dropdown__trigger"
+            onClick={() => setIsProfileOpen(!isProfileOpen)}
+          >
+            <div className="profile__info">
+              {company?.logoUrl ? (
                 <img
                   src={`http://localhost:8080/${company.logoUrl}`}
                   alt={company.name}
                   className="company-logo"
                 />
+              ) : (
+                <div className="profile__avatar--default">
+                  {company?.name?.[0] || "W"}
+                </div>
               )}
             </div>
+            <ChevronDown
+              className={`dropdown-arrow ${isProfileOpen ? "open" : ""}`}
+            />
+          </button>
 
-            <input type="search" placeholder="Search..." />
-            <button type="button" onClick={handleLogout} className="logout-btn">
-              Logout
-            </button>
-          </div>
+          {isProfileOpen && (
+            <>
+              <div className="dropdown__content" role="menu">
+                <div className="dropdown__user-info">
+                  <p className="user-name">{user?.firstName}</p>
+                  <p className="user-email">{user?.email}</p>
+                </div>
+
+                {allCompanies.length > 1 && (
+                  <div className="dropdown__companies">
+                    <p className="dropdown__label">Switch Company</p>
+                    {allCompanies.map((c) => (
+                      <button
+                        key={c.id}
+                        onClick={() => handleCompanySwitch(c.id)}
+                        className={`company-option ${
+                          c.id == company?.id ? "active" : ""
+                        }`}
+                      >
+                        {c.logoUrl ? (
+                          <img
+                            src={`http://localhost:8080/${c.logoUrl}`}
+                            alt={c.name}
+                            className="profile__avatar"
+                          />
+                        ) : (
+                          <div className="profile__avatar--default">
+                            {c.name[0]}
+                          </div>
+                        )}
+
+                        <span className="company-option__name">{c.name}</span>
+                        {c.id === company?.id && (
+                          <span className="active-indicator">✓</span>
+                        )}
+                      </button>
+                    ))}
+                  </div>
+                )}
+
+                <div className="dropdown__actions">
+                  <button type="button" className="action-btn">
+                    <Settings />
+                    Settings
+                  </button>
+                  <button
+                    type="button"
+                    onClick={handleLogout}
+                    className="action-btn"
+                  >
+                    <LogOut />
+                    Logout
+                  </button>
+                </div>
+              </div>
+              <div
+                onClick={() => setIsProfileOpen(false)}
+                className={`dropdown-overlay ${isProfileOpen ? "active" : ""}`}
+              />
+            </>
+          )}
         </div>
       </header>
-      <div className="dashboard__grid">
-        <Card className="dashboard__card">
-          <CardHeader>
-            <CardTitle className="card__title">User Profile</CardTitle>
-            <CardContent>
-              <p className="card__text">
-                Name: {user?.firstName}
-                {company?.componentIds}
-              </p>
-            </CardContent>
-          </CardHeader>
-        </Card>
 
+      <nav className="navbar">
+        <div>
+          <p className="nav-title">
+            <House /> Home{" "}
+          </p>
+        </div>
+        <div>
+          {hasInvoicing && (
+            <p className="nav-title">
+              <Landmark /> Invoicing
+            </p>
+          )}
+        </div>
+        <div>
+          {hasDocumentManagement && (
+            <p className="nav-title">
+              <FileText />
+              Documents
+            </p>
+          )}
+        </div>
+        <div>
+          {hasSafetyCompliance && (
+            <p className="nav-title">
+              <ShieldPlus />
+              Safety
+            </p>
+          )}
+        </div>
+        <div>
+          {" "}
+          {hasTimeTracking && (
+            <p className="nav-title">
+              <Clock />
+              Time
+            </p>
+          )}
+        </div>
+        <div>
+          {hasPayroll && (
+            <p className="nav-title">
+              <HandCoins />
+              Payroll
+            </p>
+          )}
+        </div>
+        <div>
+          {hasProjectManagement && (
+            <p className="nav-title">
+              <ChartGantt />
+              Projects
+            </p>
+          )}
+        </div>
+        <div>
+          {" "}
+          {hasMarketingTools && (
+            <p className="nav-title">
+              <Share2 />
+              Marketing
+            </p>
+          )}
+        </div>
+        <div>
+          {hasBookingSystem && (
+            <p className="nav-title">
+              <CalendarDays />
+              Bookings
+            </p>
+          )}
+        </div>
+        <div>
+          {hasInventoryManagement && (
+            <p className="nav-title">
+              <ScanBarcode />
+              Inventory
+            </p>
+          )}
+        </div>
+        <div>
+          {hasClientRelationshipManagement && (
+            <p className="nav-title">
+              <UserRoundCheck />
+              CRM
+            </p>
+          )}
+        </div>
+      </nav>
+
+      <div className="dashboard__grid">
         {hasInvoicing && (
           <Card className="dashboard__card">
             <CardHeader>
@@ -232,7 +463,7 @@ function DashboardPage() {
                       <TableHead>Due Date</TableHead>
                     </TableRow>
                   </TableHeader>
-                  {/* <TableBody>
+                  <TableBody>
                     {projectTasks.map((task) => (
                       <TableRow key={task.id}>
                         <TableCell>{task.project_name}</TableCell>
@@ -243,7 +474,7 @@ function DashboardPage() {
                         </TableCell>
                       </TableRow>
                     ))}
-                  </TableBody> */}
+                  </TableBody>
                 </Table>
               </CardContent>
             </CardHeader>
@@ -296,21 +527,12 @@ function DashboardPage() {
                 Client Relationship Management (CRM)
               </CardTitle>
               <CardContent>
-                <p className="card__text">Outgoing Orders</p>
-                <p className="card__text">Incoming Orders</p>
-                <p className="card__text">Low Stock</p>
+                <p className="card__text">Leads</p>
+                <p className="card__text">Complaints</p>
               </CardContent>
             </CardHeader>
           </Card>
         )}
-        {/* <div className="company__switcher">
-          {allCompanies.map((company: Company) => (
-            <button
-              key={company.id}
-              onClick={() => handleCompanySwitch(company.id)}
-            ></button>
-          ))}
-        </div> */}
       </div>
     </div>
   );
