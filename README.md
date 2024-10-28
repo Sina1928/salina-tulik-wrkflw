@@ -133,3 +133,9 @@ Deployment
    • As an employee, I can view my pay stubs and tax information
    • As an admin, I can set up payroll schedules and tax withholding rules
    • As a manager, I can approve overtime and bonus payments
+
+   ## Instructions
+
+   Please setup the db by running the sql script provided for mysql.
+   Please setup backend port to 8080.
+   All required dependencies should be installed by running npm install.
