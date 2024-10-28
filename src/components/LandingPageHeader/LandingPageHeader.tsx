@@ -1,6 +1,6 @@
 import "./LandingPageHeader.scss";
 import { Link } from "react-router-dom";
-import Hamburger from "../Hamburger/Hamburger";
+// import Hamburger from "../Hamburger/Hamburger";
 import Logo from "../Logo/Logo";
 
 function LandingPageHeader() {
@@ -16,7 +16,7 @@ function LandingPageHeader() {
             Login
           </Link>
         </div>
-        <Hamburger />
+        {/* <Hamburger /> */}
       </div>
     </div>
   );

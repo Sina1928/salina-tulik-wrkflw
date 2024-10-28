@@ -1,0 +1,27 @@
+.not-found {
+  background-color: #163c49;
+  display: flex;
+  flex-direction: column;
+}
+
+.error-title {
+  color: #fff;
+  margin: 1rem;
+}
+
+.error-subtitle {
+  color: turquoise;
+  margin: 1rem;
+}
+
+.back-home__btn {
+  background-color: #ffd700;
+  font-weight: 600;
+  display: flex;
+  justify-content: center;
+  color: #163c49;
+  width: 15%;
+  margin: 1rem;
+  padding: 0.5rem;
+  border-radius: 0.675rem;
+}

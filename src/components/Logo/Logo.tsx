@@ -1,5 +1,6 @@
 import logo from "../../assets/logo/openart-image_ARVnT7my_1729012412974_raw.jpg";
 import { Link } from "react-router-dom";
+import "./Logo.scss";
 
 function Logo() {
   return (

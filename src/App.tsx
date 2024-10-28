@@ -7,27 +7,6 @@ import LoginPage from "./Pages/LoginPage/LoginPage.tsx";
 import DashboardPage from "./Pages/DashboardPage/DashboardPage.tsx";
 import NotFoundPage from "./Pages/NotFoundPage/NotFoundPage.tsx";
 
-// const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({
-//   children,
-// }) => {
-//   const isAuthenticated = localStorage.getItem("accessToken");
-
-//   if (!isAuthenticated) {
-//     return <Navigate to="/login" replace />;
-//   }
-//   return <>{children}</>;
-// };
-
-// const ProtectedWrapper: React.FC<{ children: React.ReactNode }> = ({
-//   children,
-// }) => {
-//   return (
-//     <LoginProvider>
-//       <ProtectedRoute>{children}</ProtectedRoute>
-//     </LoginProvider>
-//   );
-// };
-
 function App() {
   return (
     <BrowserRouter>

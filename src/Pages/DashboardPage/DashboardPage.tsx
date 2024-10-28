@@ -122,7 +122,7 @@ function DashboardPage() {
 
   return (
     <div className="dashboard">
-      <header className="dashboard__header">
+      <header className="header">
         <div className="header__content">
           <div className="header__text">
             <h1 className="header__title">Welcome, {user?.firstName}</h1>
@@ -132,93 +132,14 @@ function DashboardPage() {
               placeholder="Search..."
               className="search-bar"
             />
-            {/* <div className="profile-dropdown">
-              <button
-                className="profile-dropdown__trigger"
-                onClick={() => setIsProfileOpen(!isProfileOpen)}
-              >
-                <div className="profile__info">
-                  {company?.logoUrl ? (
-                    <img
-                      src={`http://localhost:8080/${company.logoUrl}`}
-                      alt={company.name}
-                      className="company-logo"
-                    />
-                  ) : (
-                    <div className="profile__avatar--default">
-                      {company?.name?.[0] || "W"}
-                    </div>
-                  )}
-                </div>
-                <ChevronDown
-                  className={`dropdown-arrow ${isProfileOpen ? "open" : ""}`}
-                />
-              </button>
-
-              {isProfileOpen && (
-                <div className="dropdown__content">
-                  <div className="dropdown__user-info">
-                    <p className="user-name">{user?.firstName}</p>
-                    <p className="user-email">{user?.email}</p>
-                  </div>
-
-                  {allCompanies.length > 1 && (
-                    <div className="dropdown__companies">
-                      <p className="dropdown__label">Switch Company</p>
-                      {allCompanies.map((c) => (
-                        <button
-                          key={c.id}
-                          onClick={() => handleCompanySwitch(c.id)}
-                          className={`company-option ${
-                            c.id == company?.id ? "active" : ""
-                          }`}
-                        >
-                          {c.logoUrl ? (
-                            <img
-                              src={`http://localhost:8080/${c.logoUrl}`}
-                              alt={c.name}
-                              className="profile__avatar"
-                            />
-                          ) : (
-                            <div className="profile__avatar--default">
-                              {c.name[0]}
-                            </div>
-                          )}
-
-                          <span>{c.name}</span>
-                          {c.id === company?.id && (
-                            <span className="active-indicator">✓</span>
-                          )}
-                        </button>
-                      ))}
-                    </div>
-                  )}
-
-                  <div className="dropdown__actions">
-                    <button type="button" className="action-btn">
-                      <Settings />
-                      Settings
-                    </button>
-                    <button
-                      type="button"
-                      onClick={handleLogout}
-                      className="action-btn"
-                    >
-                      <LogOut />
-                      Logout
-                    </button>
-                  </div>
-                </div>
-              )}
-            </div> */}
           </div>
         </div>
-        <div className="profile-dropdown" ref={dropdownRef}>
+        <div className="dropdown" ref={dropdownRef}>
           <button
-            className="profile-dropdown__trigger"
+            className="dropdown__trigger"
             onClick={() => setIsProfileOpen(!isProfileOpen)}
           >
-            <div className="profile__info">
+            <div className="dropdown__info">
               {company?.logoUrl ? (
                 <img
                   src={`http://localhost:8080/${company.logoUrl}`}
@@ -226,7 +147,7 @@ function DashboardPage() {
                   className="company-logo"
                 />
               ) : (
-                <div className="profile__avatar--default">
+                <div className="dropdown__avatar--default">
                   {company?.name?.[0] || "W"}
                 </div>
               )}
@@ -300,7 +221,7 @@ function DashboardPage() {
         </div>
       </header>
 
-      <nav className="navbar">
+      <nav className="nav">
         <div>
           <p className="nav-title">
             <House /> Home{" "}

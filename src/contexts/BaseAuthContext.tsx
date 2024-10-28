@@ -76,37 +76,9 @@ export const BaseAuthProvider: React.FC<{ children: React.ReactNode }> = ({
   const signup = async (signupData: any) => {
     setLoading(true);
     try {
-      // const sendData = new FormData();
-
-      // const sendFields = {
-      //   email: signupData.email,
-      //   password: signupData.password,
-      //   firstName: signupData.firstName,
-      //   lastName: signupData.lastName,
-      //   companyName: signupData.companyName,
-      //   industryId: signupData.industryId,
-      //   websiteUrl: signupData.websiteUrl || "",
-      //   themeColor: signupData.themeColor,
-      //   selectedComponents: signupData.selectedComponents,
-      // };
-
-      // Object.entries(sendFields).forEach(([key, value]) => {
-      //   if (key === 'selectedComponents') {
-      //     sendData.append(key, JSON.stringify(value));
-      //   } else {
-      //     sendData.append(key, value as string);
-      //   }
-      // });
-
-      // if (signupData.logoUrl instanceof File) {
-      //   sendData.append("logoUrl", signupData.logoUrl)
-      // }
-
       const response = await axios.post(
         "http://localhost:8080/api/auth/signup",
         signupData,
-
-        // sendData,
 
         {
           headers: { "Content-Type": "multipart/form-data" },

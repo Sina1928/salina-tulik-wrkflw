@@ -81,10 +81,10 @@ const LoginPage: React.FC = () => {
               {loading ? "Logging in..." : "Login"}
             </button>
           </div>
-          <div className="login-google">
+          {/* <div className="login-google">
             <p>Or Sign in with</p>
             <button className="login-google__btn">Google</button>
-          </div>
+          </div> */}
 
           <div className="signup-prompt">
             <p>Don't have an account yet?</p>{" "}

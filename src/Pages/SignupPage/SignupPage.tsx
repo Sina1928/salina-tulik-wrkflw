@@ -46,7 +46,7 @@ const SignupPage: React.FC = () => {
     confirmPassword: "",
     companyName: "",
     logoUrl: null,
-    themeColor: "",
+    themeColor: "#ffffff",
     websiteUrl: "",
     industryId: null,
     selectedComponents: [],
@@ -236,38 +236,6 @@ const SignupPage: React.FC = () => {
       console.error("Signup error: ", err);
     }
   };
-
-  //     try {
-  //       const response = await axios.post(
-  //         "http://localhost:8080/api/auth/signup",
-  //         {
-  //           email: formData.email,
-  //           password: formData.password,
-  //           firstName: formData.firstName,
-  //           lastName: formData.lastName,
-  //           companyName: formData.companyName,
-  //           industryId: formData.industryId,
-  //           websiteUrl: formData.websiteUrl,
-  //           themeColor: formData.themeColor,
-  //           selectedComponents: formData.selectedComponents,
-  //           logoUrl: formData.logoUrl,
-  //         },
-
-  //         {
-  //           headers: {
-  //             "Content-Type": "multipart/form-data",
-  //           },
-  //         }
-  //       );
-  //       localStorage.setItem("token", response.data.token);
-  //       setFormData({email:response.data.email, })
-  //       navigate("/dashboard");
-  //     } catch (err) {
-  //       console.error("Signup error: ", err);
-  //     } finally {
-  //       setLoading(false);
-  //     }
-  //   };
 
   return (
     <div className="signup">
@@ -546,9 +514,9 @@ const SignupPage: React.FC = () => {
           )}
         </form>
 
-        <div className="social-signup">
+        {/* <div className="social-signup">
           <button className="google-btn">Continue with Google</button>
-        </div>
+        </div> */}
 
         <div className="login-prompt">
           <p>Already have an account?</p>{" "}
@@ -560,13 +528,5 @@ const SignupPage: React.FC = () => {
     </div>
   );
 };
-
-// export const SignupPage: React.FC = () => {
-//   return (
-//     <SignupProvider>
-//       <SignupContent />
-//     </SignupProvider>
-//   );
-// };
 
 export default SignupPage;

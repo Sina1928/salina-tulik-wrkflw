@@ -8,6 +8,7 @@ interface LogoUploadProps {
   onColorExtracted: (colors: string[]) => void;
   onThemeColorSelect: (color: string) => void;
   selectedThemeColor?: string;
+  initialColor?: string;
 }
 
 const LogoUploadTheme: React.FC<LogoUploadProps> = ({
@@ -15,10 +16,11 @@ const LogoUploadTheme: React.FC<LogoUploadProps> = ({
   onColorExtracted,
   onThemeColorSelect,
   selectedThemeColor,
+  initialColor = "#ffffff",
 }) => {
   const [preview, setPreview] = useState<string | null>(null);
   const [colors, setColors] = useState<string[]>([]);
-  const [customColor, setCustomColor] = useState("#ffffff");
+  const [customColor, setCustomColor] = useState(initialColor);
 
   const extractColors = async (imageUrl: string) => {
     const img = new Image();
